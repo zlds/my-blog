@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load blog_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,6 +14,7 @@
     <link rel="stylesheet" href="{% static 'blog/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'blog/css/pace.css' %}">
     <link rel="stylesheet" href="{% static 'blog/css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/highlights/github.css' %}">
 
 
     <!-- js -->
@@ -68,31 +70,8 @@
     <div class="container">
         <div class="row">
             <main class="col-md-8">
-                {% for post in post_list %}
-                <article class="post post-{{ post.pk }}">
-                    <header class="entry-header">
-                        <h1 class="entry-title">
-                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-                        </h1>
-                        <div class="entry-meta">
-                            <span class="post-category"><a href="#">{{ post.category.name }}</a></span>
-                            <span class="post-date"><a href="#"><time class="entry-date"
-                                                                      datetime="{{ post.created_time }}">{{ post.created_time }}</time></a></span>
-                            <span class="post-author"><a href="#">{{ post.author }}</a></span>
-                            <span class="comments-link"><a href="#">4 评论</a></span>
-                            <span class="views-count"><a href="#">588 阅读</a></span>
-                        </div>
-                    </header>
-                    <div class="entry-content clearfix">
-                        <p>{{ post.excerpt }}</p>
-                        <div class="read-more cl-effect-14">
-                            <a href="{{ post.get_absolute_url }}" class="more-link">继续阅读 <span class="meta-nav">→</span></a>
-                        </div>
-                    </div>
-                </article>
-                {% empty %}
-                     <div class="no-post">暂时还没有发布的文章！</div>
-                {% endfor %}
+            {% block main %}
+
 
                 <!-- 简单分页效果
                 <div class="pagination-simple">
@@ -114,49 +93,50 @@
                         <li><a href="">11</a></li>
                     </ul>
                 </div>
+            {% endblock main %}
             </main>
             <aside class="col-md-4">
+                {% block toc %}
                 <div class="widget widget-recent-posts">
                     <h3 class="widget-title">最新文章</h3>
+                    {% get_recent_posts as recent_post_list %}
                     <ul>
+                        {% for post in recent_post_list %}
                         <li>
-                            <a href="#">Django 博客开发入门教程：前言</a>
+                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
                         </li>
-                        <li>
-                            <a href="#">Django 博客使用 Markdown 自动生成文章目录</a>
-                        </li>
-                        <li>
-                            <a href="#">部署 Django 博客</a>
-                        </li>
+                        {% empty %}
+                            暂无文章！
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="widget widget-archives">
                     <h3 class="widget-title">归档</h3>
+                    {% archives as date_list %}
                     <ul>
+                        {% for date in date_list %}
                         <li>
-                            <a href="#">2017 年 5 月</a>
+                            <a href="{% url 'blog:archives' date.year date.month %}">{{ date.year }}年 {{ date.month }}月</a>
                         </li>
-                        <li>
-                            <a href="#">2017 年 4 月</a>
-                        </li>
-                        <li>
-                            <a href="#">2017 年 3 月</a>
-                        </li>
+                            {% empty %}
+                            暂无归档！
                     </ul>
+                    {% endfor %}
                 </div>
 
                 <div class="widget widget-category">
                     <h3 class="widget-title">分类</h3>
+                    {% get_categories as category_list %}
                     <ul>
+                        {% for category in category_list %}
                         <li>
-                            <a href="#">Django 博客教程 <span class="post-count">(13)</span></a>
+                            <a href="{% url 'blog:category' category.pk %}">{{ category.name }}</a>
                         </li>
                         <li>
-                            <a href="#">Python 教程 <span class="post-count">(11)</span></a>
+                            {% empty %}
+                            暂无分类!
                         </li>
-                        <li>
-                            <a href="#">Django 用户认证 <span class="post-count">(8)</span></a>
-                        </li>
+                        {% endfor %}
                     </ul>
                 </div>
 
@@ -198,6 +178,7 @@
                 <div class="rss">
                     <a href=""><span class="ion-social-rss-outline"></span> RSS 订阅</a>
                 </div>
+                {% endblock toc %}
             </aside>
         </div>
     </div>
@@ -208,7 +189,7 @@
             <div class="col-md-12">
                 <p class="copyright">&copy 2017 - 采集自<a href="http://www.cssmoban.com/"
                                                         target="_blank" title="模板之家">模板之家</a>
-                    - 由<a href="http://zmrenwu.com/" title="网页模板" target="_blank">追梦人物的博客</a>修改
+                    <a href="http://zmrenwu.com/" title="网页模板" target="_blank">我的博客</a>
                 </p>
             </div>
         </div>

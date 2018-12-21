@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.six import python_2_unicode_compatible
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -27,7 +28,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-
+@python_2_unicode_compatible
 class Post(models.Model):
     """
     文章的数据库表稍微复杂一点，主要是涉及的字段更多。
